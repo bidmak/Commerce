@@ -1,8 +1,25 @@
 {% extends "auctions/layout.html" %}
 
+
 {% block body %}
-    <div class="row">
+    <div style="text-align:end;">
         {% if user.is_authenticated %}
+            {% if not listing.isActive and user == listing.price.user %}
+                <div class="alert alert-success" role="alert">
+                    Congratulations!!! You won this Auction.
+                </div>
+            {% endif %}
+            {% if success %}
+                <div class="alert alert-primary" role="alert">
+                    {{ success }}
+                </div>
+            {% endif %}
+            {% if isUser and listing.isActive %}
+                <form action="{% url 'endAuction' id=listing.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger m-3">Close Auction</button>
+                </form>
+            {% endif %}
             {% if isListingInWatchlist %}
                 <form action="{% url 'removeWatchlist' id=listing.id %}" method="POST">
                     {% csrf_token %}
@@ -17,33 +34,60 @@
         {% endif %}
     </div>
 
-    <h2>{{ listing.title }}</h2>
-    <img src=" {{ listing.imageUrl }}" alt="{{ listing.title }}" height="300px">
-    <p>{{ listing.description }}</p>
-    <h6>Price: ${{ listing.price }}</h6>
+    <div style="text-align:center;">
+        <h2>{{ listing.title }}</h2>
+        <img src=" {{ listing.imageUrl }}" alt="{{ listing.title }}" width="400" height="400px">
+        <p>{{ listing.description }}</p>
+        <h6>Price: ${{ listing.price.bid }}</h6>
+    </div>
+    {% if listing.isActive %}
+        {% if user.is_authenticated %}
+        <h5>Bid</h5>
+            <form action="{% url 'addBid' id=listing.id %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="bid">Add bid:</label>
+                    <input type="number" min="0" name="bid" placehold="Add new bid"></input>
+                    <button type="submit" class="btn btn-info">Add</button>
+                </div>
+            </form>
+            {% if message %}
+                {% if updated %}
+                    <div style="color:green">{{ message }}</div>
+                {% else %}
+                    <div style="color:red">{{ message }}</div>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    
     <br>
     <h5>Details</h5>
     <ul>
         <li>Listed by: {{ listing.owner }}</li>
         <li>Category: {{ listing.category }}</li>
     </ul>
+    
+    {% if listing.isActive %}
     <h5>Comment</h5>
-    <div class="mx-3">
-        {% if user.is_authenticated %}
-            <form action="{% url 'addComment' id=listing.id %}" method="POST">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="comment" class="form-label">Add comment:</label>
-                    <textarea class="form-control w-50" rows="5" id="comment" name="newComment"></textarea>
-                    <div class="d-flex flex-row-reverse w-50">
-                        <button type="submit" class="btn btn-info mt-2">Add</button>
+        <div class="mx-3">
+            {% if user.is_authenticated %}
+                <form action="{% url 'addComment' id=listing.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Add comment:</label>
+                        <textarea class="form-control w-50" rows="5" id="comment" name="newComment"></textarea>
+                        <div class="d-flex flex-row-reverse w-50">
+                            <button type="submit" class="btn btn-info mt-2">Add</button>
+                        </div>
                     </div>
-                </div>
-            </form>
-        {% endif %}
-    </div>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+    
     <ul class="list-group">
-        <h6>Comments</h6>
+        <h5>Comments</h5>
         {% for comment in allComments %}
             <li class="list-group-item">
                 <strong>{{ comment.author }}</strong>

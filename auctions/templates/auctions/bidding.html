@@ -1,0 +1,30 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>My biddding</h2>
+
+    <div class="row m-5 ">
+        {% for listing in listings %}
+
+                {% if not listing.isActive and user == listing.price.user %}
+                    <div class="card card-header text-center  m-3 p-2" style="width: 18rem; color: green">
+                        <img src="{{ listing.imageUrl }}" class="card-img-top" alt="{{ listing.title }}">
+                        <div class="card-body">
+                        <h5 class="card-title">{{ listing.title }}</h5>
+                        <p class="card-text">{{ listing.description }}</p>
+                        <a href="{% url 'listing' id=listing.id %}" class="btn btn-success">Select</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card card-header text-center  m-3 p-2" style="width: 18rem;">
+                        <img src="{{ listing.imageUrl }}" class="card-img-top" alt="{{ listing.title }}">
+                        <div class="card-body">
+                        <h5 class="card-title">{{ listing.title }}</h5>
+                        <p class="card-text">{{ listing.description }}</p>
+                        <a href="{% url 'listing' id=listing.id %}" class="btn btn-info">Select</a>
+                        </div>
+                    </div>
+                {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

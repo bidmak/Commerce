@@ -9,7 +9,7 @@
             <br>
             <label for="category">Choose a category:</label>
             <select name="category" id="category" class="form-select bg-light" aria-label="Default select example">
-                <option value="select" selected>Select category</option>
+                <option value="select" selected>all</option>
                 {% for category in categories %}
                     <option value="{{ category }}">{{ category }}</option>
                 {% endfor %}
@@ -20,10 +20,11 @@
     <div class="row m-5 ">
         {% for listing in listings %}
         <div class="card card-header text-center  m-3 p-2" style="width: 18rem;">
-            <img src="{{ listing.imageUrl }}" class="card-img-top" alt="{{ listing.title }}">
+            <img src="{{ listing.imageUrl }}" class="card-img-top" alt="{{ listing.title }}" height="240">
             <div class="card-body">
               <h5 class="card-title">{{ listing.title }}</h5>
-              <p class="card-text">{{ listing.description }}</p>
+              <p class="card-text">${{ listing.price.bid }}</p>
+              <p class="card-text">{{ listing.description|truncatechars:50 }}</p>
               <a href="{% url 'listing' id=listing.id %}" class="btn btn-info">Select</a>
             </div>
           </div>
